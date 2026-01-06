@@ -1,35 +1,46 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# 🌧️ ESP32 智能加湿器 (Smart Humidifier)
 
-# _Sample project_
+这是一个基于 **ESP32-C3** 芯片开发的智能加湿器项目。集成了 **Wi-Fi 远程控制**、**蓝牙 (BLE)**、**离线语音识别** 以及 **炫酷 RGB 氛围灯** 功能。
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## ✨ 功能特性
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+* **💧 加湿器控制**：
+    * 支持 PWM 频率自适应（默认 108kHz），带软启动/软停止保护，延长雾化片寿命。
+* **🌈 炫酷灯效**：
+    * 支持多种 RGB 模式：`彩虹流光`、`深海呼吸`、`赛博朋克`、`全关`。
+* **📱 多模态交互**：
+    * **Wi-Fi 控制**：建立 TCP 服务器，通过手机 App 或调试助手局域网控制。
+    * **语音控制**：支持离线语音指令（"打开加湿器"、"切换呼吸灯"等）。
+    * **蓝牙 (BLE)**：支持低功耗蓝牙连接与控制（已预留接口）。
+* **🛠️ 稳定架构**：
+    * 基于 FreeRTOS 多任务架构，各模块（网络、灯光、语音）独立运行，互不干扰。
+    * NVS 掉电记忆功能。
 
+## 🛠️ 硬件环境
 
+* **主控芯片**：ESP32-C3 (RISC-V 架构)
+* **雾化模块**：108kHz 微孔雾化片 + 驱动电路
+* **灯光模块**：WS2812B (或兼容) RGB 灯珠
+* **语音模块**：离线语音识别模块 (UART 通信)
+* **其他**：物理按键、Type-C 供电
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+## 🚀 快速开始
 
-## Example folder contents
+### 1. 开发环境搭建
+本项目基于 **ESP-IDF v5.x** 框架开发。
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+### 2. 配置分区表 (重要)
+由于本项目同时启用了 Wi-Fi 和 BLE 协议栈，固件体积较大，请务必修改分区表配置：
+* 运行 `idf.py menuconfig`
+* 进入 `Partition Table` -> 选择 `Huge App (3MB No OTA)`
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
+### 3. 编译与烧录
+```bash
+# 编译
+idf.py build
 
-Below is short explanation of remaining files in the project folder.
+# 烧录 (请将 COMx 替换为你的实际端口)
+idf.py -p COMx flash
 
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+# 监控串口日志
+idf.py monitor
