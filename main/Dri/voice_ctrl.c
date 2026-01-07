@@ -29,6 +29,8 @@ void Voice_Ctrl_Init(void) {
     
     // 因为日志通道已经改到了 USB-JTAG，这里打印日志是安全的，会在电脑上显示
     ESP_LOGI(TAG, "Voice UART (UART0) Init Done.");
+     // 确保 Dri/voice_ctrl.c 里有 Voice_Task 这个函数
+    xTaskCreate(Voice_Task, "voice_task", 4096, NULL, 5, NULL);
 }
 
 void Voice_Task(void *arg) {
